@@ -1,0 +1,168 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 25px 30px;
+    border-radius: 8px;
+    border: 1px solid #4a6fa5;
+    width: 600px;
+    min-height: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    animation: zoomIn 0.3s ease-out forwards;
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 1.5rem;
+    color: #bdc3c7;
+    cursor: pointer;
+    line-height: 0;
+    transition: all 0.2s ease-in-out;
+
+    /* --- ĐẢM BẢO CÓ ĐỦ 3 DÒNG NÀY ĐỂ CĂN GIỮA --- */
+    display: flex;
+    align-items: center;      /* Căn giữa theo chiều dọc */
+    justify-content: center;  /* Căn giữa theo chiều ngang */
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    padding-right: 40px;
+    border-bottom: 1px solid #34495e;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.modal-details {
+    margin-bottom: 20px;
+}
+.modal-details p {
+    margin: 10px 0;
+    font-size: 1rem;
+    display: flex;
+}
+.modal-details p strong {
+    color: #95a5a6;
+    min-width: 150px;
+    display: inline-block;
+}
+
+.vehicle-list {
+    flex-grow: 1;
+    margin-top: 15px;
+    border-top: 1px solid #34495e;
+    padding-top: 20px;
+}
+.vehicle-list h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: #3498db;
+}
+.vehicle-list ul {
+    list-style-type: none;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+}
+.vehicle-list li {
+    background-color: #34495e;
+    color: #ecf0f1;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    border-left: 4px solid #3498db;
+    font-weight: 500;
+}
+.vehicle-list p {
+    color: #95a5a6;
+    font-style: italic;
+}
+
+.modal-actions {
+    margin-top: 25px;
+    text-align: right;
+}
+
+.action-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.error-button {
+    background-color: #e74c3c;
+}
+.error-button:hover {
+    background-color: #c0392b;
+}
+
+/* Thêm vào cuối file StationModal.css */
+.vehicle-list ul li {
+    display: flex; /* Cho phép căn chỉnh nút xóa */
+    justify-content: space-between; /* Đẩy nội dung và nút ra hai bên */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 5px 0; /* Thêm padding nhẹ */
+}
+
+.vehicle-details {
+    flex-grow: 1; /* Cho phép phần text chiếm không gian */
+}
+
+.remove-vehicle-btn {
+    background: none;
+    border: none;
+    color: #e74c3c; /* Màu đỏ */
+    cursor: pointer;
+    font-size: 0.9em; /* Kích thước icon nhỏ hơn */
+    padding: 2px 5px;
+    margin-left: 10px; /* Khoảng cách với text */
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.remove-vehicle-btn:hover {
+    opacity: 1;
+    color: #c0392b; /* Đỏ sậm hơn khi hover */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

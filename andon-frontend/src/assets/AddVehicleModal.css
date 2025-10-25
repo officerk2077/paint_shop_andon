@@ -1,0 +1,87 @@
+/* === (ĐÃ CẬP NHẬT) CSS CHO MODAL THÊM XE === */
+.add-vehicle-modal-form {
+  display: flex;
+  flex-direction: column; 
+  gap: 18px; /* Tăng khoảng cách giữa các mục (từ 15px) */
+  margin-top: 20px; 
+}
+
+.add-vehicle-modal-form label {
+  font-weight: 700;
+  font-size: 15px;
+  color: #ffffff;
+  margin-bottom: -10px;
+  text-transform: uppercase;
+}
+
+/* Style cho input */
+.add-vehicle-modal-form input[type="text"] {
+  background-color: #ffffff; 
+  color: #212529;
+  border: 1px solid #ced4da; 
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 16px; 
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.add-vehicle-modal-form input[type="text"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2); 
+}
+
+/* --- (CẬP NHẬT) CSS CHO CHECKBOX --- */
+.add-vehicle-modal-toggle {
+  display: flex;
+  flex-direction: row; 
+  align-items: center;
+  gap: 8px; /* Giảm gap (từ 10px) để gần chữ hơn */
+  margin-top: 0; /* Bỏ margin-top (từ 5px) */
+  
+  /* Bỏ nền xám và viền để gọn gàng hơn */
+  background-color: transparent; 
+  border: none;
+  padding: 0; /* Bỏ padding */
+}
+
+.add-vehicle-modal-toggle label {
+  font-weight: 400; /* Font thường (từ 500) */
+  font-size: 15px; /* Lớn hơn (từ 14px) */
+  color: #ffffff; /* Đậm hơn (từ #555) */
+  margin-bottom: 0; 
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.add-vehicle-modal-toggle input[type="checkbox"] {
+  width: 15px; /* Nhỏ hơn (từ 17px) */
+  height: 15px; /* Nhỏ hơn (từ 17px) */
+  cursor: pointer;
+  margin: 0; 
+  flex-shrink: 0; /* Ngăn checkbox bị co lại */
+}
+/* --- KẾT THÚC CẬP NHẬT CHECKBOX --- */
+
+
+/* Style cho button */
+.add-vehicle-modal-form button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 15px; 
+  font-size: 16px; 
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); 
+  text-transform: uppercase;
+}
+
+.add-vehicle-modal-form button:hover {
+  background-color: #0056b3; 
+}
+.add-vehicle-modal-form button:active {
+  transform: scale(0.98); 
+}

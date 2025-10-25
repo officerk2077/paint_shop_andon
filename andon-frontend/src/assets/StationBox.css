@@ -1,0 +1,186 @@
+:root {
+    --border-color: #e3e8ef;
+    --station-bg: #ffffff;
+    --station-bg-hover: #f7f9fc;
+    --slot-bg-empty: #f8f9fa;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    
+    /* Trạng thái OK */
+    --status-ok-border: #28a745;
+
+    /* Trạng thái Rework */
+    --status-rework-border: #ffc107;
+    --status-rework-bg: #fffcf0;
+
+    /* Trạng thái Error */
+    --status-error-border: #dc3545;
+    --status-error-bg: #fdf2f2;
+
+    --status-blocked-border: #6c757d; /* Bỏ comment */
+    --status-blocked-bg: #f8f9fa;
+}
+
+.station-box {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background-color: var(--station-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    min-height: 70px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.station-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    background-color: var(--station-bg-hover);
+}
+
+.station-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    min-height: 25px; 
+    gap: 8px;
+}
+
+.station-title-container {
+    display: flex;
+    align-items: center; 
+    gap: 8px;
+    flex-grow: 1; 
+    flex-shrink: 1; 
+    min-width: 0;
+}
+
+.station-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.header-right-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.station-timer {
+    font-weight: 600;      
+    color: #e74c3c;         
+    font-size: 15px;       
+    min-width: 45px;
+    text-align: right;     
+    font-family: 'Courier New', Courier, monospace; 
+    white-space: nowrap;
+}
+
+.station-body {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: 6px;
+    align-content: flex-start;
+}
+
+.vehicle-slot {
+    border: 1px dashed #000000;
+    background-color: var(--slot-bg-empty);
+    border-radius: 6px;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.vehicle-tag {
+    background-color: transparent; 
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    border: none;
+}
+
+.vehicle-content {
+    width: 100%; 
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 4px;
+}
+
+.vehicle-model {
+    font-weight: 800;
+    font-size: 14px;
+}
+.vehicle-id {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.station-box.status-ok {
+    border-left: 5px solid var(--status-ok-border);
+}
+.station-box.status-rework {
+    border-left: 5px solid var(--status-rework-border);
+    background-color: var(--status-rework-bg);
+    animation: pulse-rework 2s infinite;
+}
+.station-box.status-error {
+    border-left: 5px solid var(--status-error-border);
+    background-color: var(--status-error-bg);
+    animation: pulse-error 1.5s infinite;
+}
+
+.station-box.status-blocked {
+    border-left: 5px solid var(--status-blocked-border);
+    background-color: #e3e8ef;
+    opacity: 0.8;
+}
+
+.blinking-dot { 
+    height: 9px;
+    width: 9px;
+    background-color: #28a745;
+    border-radius: 50%;
+    animation: blink-animation 1.5s infinite;
+    flex-shrink: 0; 
+}
+
+@keyframes blink-animation {
+    0% { opacity: 1; box-shadow: 0 0 4px #28a745; }
+    50% { opacity: 0.2; box-shadow: none; }
+    100% { opacity: 1; box-shadow: 0 0 4px #28a745; }
+}
+@keyframes pulse-error {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+@keyframes pulse-rework {
+    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+

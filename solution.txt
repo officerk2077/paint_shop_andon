@@ -1,0 +1,55 @@
+import React from 'react'; // Sửa lỗi gõ nhầm 'react'
+import '../assets/StationModal.css';
+import '../assets/DashboardLayout.css'; // Thêm import này để lấy style cho form
+
+// Cập nhật: Nhận thêm props 'keepOpen' và 'setKeepOpen'
+export default function AddVehicleModal({ 
+    newBodyId, 
+    setNewBodyId, 
+    onAddVehicle, 
+    onClose, 
+    keepOpen, 
+    setKeepOpen 
+}) {
+    
+    const handleContentClick = (e) => e.stopPropagation();
+
+    return (
+        <div className='modal-overlay' onClick={onClose}>
+            {/* Sửa lỗi gõ nhầm: 'model-content' -> 'modal-content' */}
+            <div className='modal-content' onClick={handleContentClick}> 
+                <button className='close-button' onClick={onClose}>x</button>
+                <h2>Thêm xe mới vào dây chuyền</h2>
+
+                <form onSubmit={onAddVehicle} className='add-vehicle-modal-form'>
+                    <label htmlFor="bodyIdInput">Mã thân xe: </label>
+                    <input
+                        id='bodyIdInput' 
+                        type="text"
+                        value={newBodyId}
+                        onChange={(e) => setNewBodyId(e.target.value)}
+                        placeholder='Nhập mã thân xe '
+                        autoFocus 
+                        />
+                    
+                    {/* --- THÊM MỚI: Checkbox "Thêm nhiều xe" --- */}
+                    <div className="add-vehicle-modal-toggle">
+                        <input
+                            type="checkbox"
+                            id="keepOpenCheckbox"
+                            checked={keepOpen}
+                            onChange={(e) => setKeepOpen(e.target.checked)}
+                        />
+                        <label htmlFor="keepOpenCheckbox">
+                            Thêm nhiều xe (Không đóng cửa sổ)
+                        </label>
+                    </div>
+                    {/* --- KẾT THÚC THÊM MỚI --- */}
+
+                    <button type='submit'>Thêm xe</button>
+                </form>
+            </div>
+        </div>
+    );
+};
+
