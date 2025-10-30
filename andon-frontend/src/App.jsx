@@ -5,7 +5,7 @@ import StationModal from './components/StationModal';
 import AddVehicleModal from './components/AddVehicleModal';
 import ToastNotification from './components/ToastNotification';
 import LogPanel from './components/LogPanel';
-import { FaBell, FaPause, FaPlay, FaCog, FaPlus, FaExclamationTriangle } from 'react-icons/fa';
+import { FaBell, FaPause, FaPlay, FaCog, FaPlus, FaCheck, FaSync, FaExclamationTriangle } from 'react-icons/fa';
 import './assets/DashboardLayout.css';
 import './assets/ToastNotification.css';
 
@@ -44,6 +44,18 @@ function App() {
         setNotifications(prev => prev.filter(n => n.id !== id));
     }, []);
 
+    const handleConfirmError = useCallback((bodyIdToConfirm, errorDescription) => { // Chấp nhận errorDescription
+    console.log(`[App] Gửi yêu cầu xác nhận lỗi xe: ${bodyIdToConfirm} với lỗi "${errorDescription}"`);
+    // Gửi đi payload object
+    socket.emit('confirm-vehicle-error', { bodyId: bodyIdToConfirm, errorDescription: errorDescription });
+    }, []);
+
+    const handleSendToRecoat = useCallback((bodyIdToSend, errorDescription) => { // Chấp nhận errorDescription
+    console.log(`[App] Gửi yêu cầu gửi xe đi WR: ${bodyIdToSend} với lỗi "${errorDescription}"`);
+    // Gửi đi payload object
+    socket.emit('send-to-recoat', { bodyId: bodyIdToSend, errorDescription: errorDescription });
+    }, []);
+    
     // Effect chính lắng nghe socket events
     useEffect(() => {
         socket.on('initial-state', (data) => {
@@ -129,7 +141,7 @@ function App() {
         };
         if (showActionMenu) {
             document.addEventListener('mousedown', handleClickOutsideAction);
-        } else {
+        } else {    
             document.removeEventListener('mousedown', handleClickOutsideAction);
         }
         return () => {
@@ -219,14 +231,23 @@ function App() {
                                 <ul>
                                     <li onClick={() => { setShowAddVehicleModal(true);
                                     setShowActionMenu(false); }}>
-                                        <FaPlus/> Thêm xe...
+                                        {/* Sửa lỗi: Bọc nội dung trong thẻ span */}
+                                        <span>
+                                            <FaPlus/> Thêm xe...
+                                        </span>
                                     </li>
                                     <li onClick={() => { handleTogglePausePlay();
                                     setShowActionMenu(false); }}>
-                                        {isLinePaused ? <><FaPlay/> Tiếp tục chuyền</> : <><FaPause/> Tạm dừng chuyền</>}
+                                        {/* Sửa lỗi: Bọc nội dung trong thẻ span */}
+                                        <span>
+                                            {isLinePaused ? <><FaPlay/> Tiếp tục chuyền</> : <><FaPause/> Tạm dừng chuyền</>}
+                                        </span>
                                     </li>
                                     <li onClick={() => { handleEmergencyStop(); setShowActionMenu(false); }} className='action-menu-item-danger'>
-                                        <FaExclamationTriangle /> Dừng khẩn cấp...
+                                        {/* Sửa lỗi: Bọc nội dung trong thẻ span */}
+                                        <span>
+                                            <FaExclamationTriangle /> Dừng khẩn cấp...
+                                        </span>
                                     </li>
                                 </ul>
                             </div>
@@ -273,7 +294,9 @@ function App() {
                     vehicles={getVehiclesAtStation(selectedStation.id)}
                     onClose={handleCloseModal}
                     onReportError={handleReportError}
-                    onRemoveVehicle={handleRemoveVehicle} 
+                    onRemoveVehicle={handleRemoveVehicle}
+                    onConfirmError={handleConfirmError}
+                    onSendToRecoat={handleSendToRecoat}
                 />
             )}
 

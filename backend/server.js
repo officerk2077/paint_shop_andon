@@ -6,6 +6,7 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
 const simulationService = require('./services/simulationService');
+const { log } = require('console');
 
 const app = express();
 app.use(express.json());
@@ -74,10 +75,10 @@ app.get('/api/logs', async (req, res) => {
 
 io.on('connection', (socket) => {
     console.log(`🔌 Một người dùng đã kết nối: ${socket.id}`);
-    
+
     socket.emit('initial-state', simulationService.getState());
     socket.emit('db-status-update', dbStatus);
-    
+
     socket.on('add-vehicle', async (bodyId) => {
         if (!bodyId) return;
         try {
@@ -94,7 +95,11 @@ io.on('connection', (socket) => {
     socket.on('emergency-stop', async () => {
         if (simulationService.emergencyStopAndClear) {
             await simulationService.emergencyStopAndClear();
-            io.emit('action-confirmed', { 
+            
+            // Khởi động lại mô phỏng ngay sau khi dừng (Sửa lỗi kẹt buffer)
+            simulationService.start(); 
+            
+            io.emit('action-confirmed', {
                 message: 'Dây chuyền đã dừng và tất cả xe đã được xóa.',
                 type: 'error'
             });
@@ -121,27 +126,46 @@ io.on('connection', (socket) => {
         }
         try {
             await simulationService.removeVehicle(bodyId);
-            // Gửi xác nhận thành công (có thể gửi cho tất cả hoặc chỉ người yêu cầu)
-            // io.emit('action-confirmed', { message: `Xe ${bodyId} đã được xóa.`, type: 'info' });
-             socket.emit('action-confirmed', { message: `Xe ${bodyId} đã được xóa.`, type: 'info' });
         } catch (error) {
             console.error(`[Socket] Lỗi khi xóa xe ${bodyId}:`, error);
             socket.emit('action-error', { message: `Không thể xóa xe ${bodyId}. ${error.message}` });
         }
     });
 
+    socket.on('confirm-vehicle-error', async (payload) => {
+        if (!payload || !payload.bodyId) {
+            console.error('[Socket] Nhận yêu cầu xác nhận lỗi xe không hợp lệ:', payload);
+            socket.emit('action-error', { message: 'Dữ liệu yêu cầu không hợp lệ.' });
+            return;
+        }
+        console.log(`[Socket] Nhận yêu cầu xác nhận lỗi xe: ${payload.bodyId} với lỗi "${payload.errorDescription}"`);
+        if (simulationService.confirmVehicleError) {
+            await simulationService.confirmVehicleError(payload.bodyId, payload.errorDescription, socket);
+        }
+    });
+
+    socket.on('send-to-recoat', async (payload) => {
+        if (!payload || !payload.bodyId) {
+            console.error('[Socket] Nhận yêu cầu gửi xe đi WR không hợp lệ:', payload);
+            socket.emit('action-error', { message: 'Dữ liệu yêu cầu không hợp lệ.' });
+            return;
+        }
+        console.log(`[socket] Nhận yêu cầu gửi xe đi WR: ${payload.bodyId} với lỗi "${payload.errorDescription}"`);
+        if (simulationService.sendVehicleToRecoat) {
+            await simulationService.sendVehicleToRecoat(payload.bodyId, payload.errorDescription, socket);
+        }
+    });
+
     socket.on('disconnect', () => {
         console.log(`🔌 Người dùng đã ngắt kết nối: ${socket.id}`);
     });
-});
+
+}); 
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, async () => {
     console.log(`🚀 Server đang chạy trên cổng ${PORT}`);
-    
     await simulationService.initialize(io, pool);
-    
-    // --- CẬP NHẬT 2: KÍCH HOẠT LẠI MÔ PHỎNG DI CHUYỂN XE ---
     simulationService.start();
 
     setInterval(() => {

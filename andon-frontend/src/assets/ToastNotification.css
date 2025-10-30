@@ -19,6 +19,8 @@
     min-width: 300px;
     animation: slideIn 0.5s forwards;
     opacity: 0;
+    background-color: #17a2b8;
+    color: white
 }
 
 .toast.exit {
@@ -56,6 +58,11 @@
 }
 .toast-close-btn:hover {
     opacity: 1;
+}
+
+.toast.info {
+  background-color: #17a2b8;
+  color: white
 }
 
 /* Animations */

@@ -1,4 +1,5 @@
 import React from 'react';
+// THAY ĐỔI: Đã cập nhật đường dẫn import CSS.
 import '../assets/AddVehicleModal.css';
 
 
@@ -16,7 +17,14 @@ export default function AddVehicleModal({
     return (
         <div className='modal-overlay' onClick={onClose}>
             <div className='modal-content' onClick={handleContentClick}> 
-                <button className='close-button' onClick={onClose}>x</button>
+                {/* === THAY ĐỔI: Cập nhật cấu trúc HTML của nút close === */}
+                <button className='close-button' onClick={onClose}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </button>
+                {/* === KẾT THÚC THAY ĐỔI === */}
                 <h2>Thêm xe mới vào dây chuyền</h2>
 
                 <form onSubmit={onAddVehicle} className='add-vehicle-modal-form'>
@@ -46,3 +54,4 @@ export default function AddVehicleModal({
         </div>
     );
 };
+

@@ -1,36 +1,84 @@
-
 import React from 'react';
-import { FaTrashAlt } from 'react-icons/fa';
+// Bỏ import useState và useEffect vì không dùng state nội bộ nữa
+// import { useEffect, useState } from 'react';
+import { FaCheck, FaSync, FaTimes, FaTrashAlt } from 'react-icons/fa';
 import '../assets/StationModal.css';
 
-// Thêm `onRemoveVehicle` vào danh sách props
-const StationModal = ({ station, vehicles, onClose, onRemoveVehicle }) => {
+const OFFLINE_REPAIR_STATION_ID = 25; // ID trạm Offline Repair
+
+const StationModal = ({ station, vehicles, onClose, onRemoveVehicle, onConfirmError, onSendToRecoat }) => {
+    // Bỏ state errorDescriptions
+    // const [errorDescriptions, setErrorDescriptions] = useState({});
+    // useEffect(() => { setErrorDescriptions({}); }, [station, vehicles]);
+
     if (!station) return null;
 
     const handleContentClick = (e) => e.stopPropagation();
 
-    // const handleReportErrorClick = () => {
-    //     onReportError(station.id);
-    // };
-
-    // --- HÀM MỚI: Xử lý khi nhấn nút xóa xe ---
     const handleRemoveClick = (bodyId, modelName) => {
-        // Hỏi xác nhận trước khi xóa
+        // ... (existing code) ...
         if (window.confirm(`Bạn có chắc chắn muốn xóa xe ${bodyId} (${modelName}) khỏi dây chuyền không?`)) {
-            // Kiểm tra xem prop có phải là hàm không trước khi gọi
             if (typeof onRemoveVehicle === 'function') {
                 onRemoveVehicle(bodyId);
+                onClose(); // Đóng modal sau khi xóa thành công
             } else {
                 console.error("Lỗi: onRemoveVehicle không phải là một hàm!");
             }
         }
     };
 
+    // Hàm xử lý click nút Confirm Error (OK - Lỗi nhẹ)
+    const handleConfirmErrorClick = (bodyId) => {
+        // ... (existing code) ...
+        // Hiện prompt yêu cầu nhập lỗi nhẹ
+        const description = window.prompt(`Xác nhận sửa xong xe ${bodyId}. Nhập mô tả lỗi nhẹ (nếu có):`, "");
+
+        // Nếu người dùng không nhấn Cancel
+        if (description !== null) {
+            if (typeof onConfirmError === 'function') {
+                // Gửi bodyId và mô tả lỗi lên App.jsx -> Backend
+                onConfirmError(bodyId, description.trim() || 'N/A'); // Gửi 'N/A' nếu không nhập gì
+            }
+            onClose(); // Đóng modal sau khi nhấn OK trên prompt
+        }
+        // Nếu nhấn Cancel thì không làm gì cả
+    };
+
+    // Hàm xử lý click nút Send To Recoat (NG - Sơn lại)
+    const handleSendToRecoatClick = (bodyId) => {
+        // ... (existing code) ...
+         // Hiện prompt yêu cầu nhập lỗi nặng
+         const description = window.prompt(`Xác nhận gửi xe ${bodyId} đi sơn lại. Nhập mô tả lỗi nặng:`, "");
+
+         // Chỉ thực hiện nếu người dùng nhập lỗi và không nhấn Cancel
+         if (description !== null && description.trim() !== "") {
+            if (window.confirm(`Bạn có chắc chắn muốn gửi xe ${bodyId} đi WR với lỗi "${description}" không?`)) { // Thêm xác nhận lần cuối
+                if (typeof onSendToRecoat === 'function') {
+                    // Gửi bodyId và mô tả lỗi lên App.jsx -> Backend
+                    onSendToRecoat(bodyId, description.trim());
+                }
+                 onClose(); // Đóng modal sau khi xác nhận lần cuối
+            }
+         } else if (description !== null && description.trim() === "") {
+             alert("Bạn phải nhập mô tả lỗi nặng trước khi gửi đi sơn lại.");
+             // Không đóng modal, cho người dùng nhập lại hoặc cancel prompt
+         }
+         // Nếu nhấn Cancel trên prompt đầu tiên thì không làm gì cả
+    };
+
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={handleContentClick}>
-                <button className="close-button" onClick={onClose}>×</button>
-                
+            {/* Class "station-modal-content" có thể giữ hoặc bỏ tùy theo CSS */}
+            <div className="modal-content station-modal-content" onClick={handleContentClick}>
+                {/* === THAY ĐỔI: Cập nhật cấu trúc HTML của nút close === */}
+                <button className="close-button" onClick={onClose}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </button>
+                {/* === KẾT THÚC THAY ĐỔI === */}
+
                 <h2>Thông tin trạm: {station.name}</h2>
 
                 <div className="modal-details">
@@ -45,27 +93,45 @@ const StationModal = ({ station, vehicles, onClose, onRemoveVehicle }) => {
                         <ul>
                             {vehicles.sort((a, b) => a.slot_position - b.slot_position).map(v => (
                                 <li key={v.body_id}>
+                                    {/* Phần hiển thị thông tin xe */}
                                     <span className="vehicle-details">
-                                        <span className="slot-indicator">[Slot {v.slot_position}]</span> 
+                                        <span className="slot-indicator">[Slot {v.slot_position}]</span>
                                         <span className="color-swatch" style={{ backgroundColor: v.color_hex }}></span>
                                         {v.body_id} - {v.model_name} ({v.target_color})
                                         - <span className={`status-text-${v.status}`}>{v.status}</span>
-
-                                        {v.current_error_name && (
-                                            <span className="error-details">
-                                                : {v.current_error_name}
-                                            </span>
-                                        )}
-                                        {/* === KẾT THÚC BỔ SUNG === */}
-
+                                        {/* Không hiển thị current_error_name vì lỗi sẽ được nhập tay */}
                                     </span>
-                                    <button 
-                                        className="remove-vehicle-btn" 
-                                        onClick={() => handleRemoveClick(v.body_id, v.model_name)}
-                                        title={`Xóa xe ${v.body_id}`}
-                                    >
-                                        <FaTrashAlt />
-                                    </button>
+
+                                    {/* Hiển thị nút OK/NG nếu đúng trạm và trạng thái */}
+                                    {station.id === OFFLINE_REPAIR_STATION_ID && v.status === 'rework_pending' && (
+                                        <div className='rework-pending-actions'> {/* Giữ class này để style nút */}
+                                            <button
+                                                className='action-button confirm-error-btn'
+                                                onClick={() => handleConfirmErrorClick(v.body_id)}
+                                                title={`Xác nhận sửa xong (lỗi nhẹ)`}
+                                            >
+                                                <FaCheck /> OK (Lỗi nhẹ)
+                                            </button>
+                                            <button
+                                                className='action-button send-recoat-btn'
+                                                onClick={() => handleSendToRecoatClick(v.body_id)}
+                                                title={`Gửi đi sơn lại (lỗi nặng)`}
+                                            >
+                                                <FaSync /> NG (Sơn lại)
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* Nút xóa xe */}
+                                    <div className='vehicle-actions'>
+                                        <button
+                                            className="action-button remove-vehicle-btn"
+                                            onClick={() => handleRemoveClick(v.body_id, v.model_name)}
+                                            title={`Xóa xe ${v.body_id}`}
+                                        >
+                                            <FaTrashAlt />
+                                        </button>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -73,12 +139,6 @@ const StationModal = ({ station, vehicles, onClose, onRemoveVehicle }) => {
                         <p>Không có xe nào tại trạm.</p>
                     )}
                 </div>
-
-                {/* <div className="modal-actions">
-                    <button className="action-button error-button" onClick={handleReportErrorClick}>
-                        Báo lỗi máy móc
-                    </button>
-                </div> */}
             </div>
         </div>
     );

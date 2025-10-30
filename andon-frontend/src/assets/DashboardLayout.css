@@ -372,6 +372,7 @@
   font-size: 14px;
   font-weight: 500;
   transition: background-color 0.2s;
+  border-bottom: none !important;
 }
 
 .action-menu-dropdown li:hover {
