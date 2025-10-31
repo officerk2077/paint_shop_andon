@@ -1,13 +1,19 @@
-const TICK_RATE = 1000;
-const DB_CHECK_INTERVAL = 5000;
+// Import các thư viện
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-const mysql = require('mysql2/promise');
-const simulationService = require('./services/simulationService');
-const { log } = require('console');
 
+// Import các module cấu hình
+const { PORT, TICK_RATE, DB_CHECK_INTERVAL } = require('./config/appConfig');
+const pool = require('./config/database');
+
+// Import service và handlers
+const simulationService = require('./services/simulationService');
+const apiRoutes = require('./routes/api');
+const initializeSocket = require('./socket/socketHandler');
+
+// Khởi tạo Express, HTTP Server và Socket.IO
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -19,19 +25,7 @@ const io = new Server(server, {
     }
 });
 
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '3011',
-    database: 'paint_shop_andon',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-};
-
-const pool = mysql.createPool(dbConfig);
-console.log('✅ Pool kết nối database đã được tạo.');
-
+// === Logic kiểm tra DB (Giữ ở file chính vì cần cả `pool` và `io`) ===
 let dbStatus = 'disconnected';
 
 async function checkDbConnection() {
@@ -39,135 +33,31 @@ async function checkDbConnection() {
         await pool.query('SELECT 1');
         if (dbStatus !== 'connected') {
             dbStatus = 'connected';
-            io.emit('db-status-update', dbStatus);
+            io.emit('db-status-update', dbStatus); // Gửi sự kiện qua io
         }
     } catch (error) {
         if (dbStatus !== 'disconnected') {
             dbStatus = 'disconnected';
-            io.emit('db-status-update', dbStatus);
+            io.emit('db-status-update', dbStatus); // Gửi sự kiện qua io
         }
     }
 }
+// 1. Đăng ký API routes
+app.use('/api', apiRoutes);
 
-app.post('/api/vehicles', async (req, res) => {
-    const { body_id } = req.body;
-    if (!body_id) {
-        return res.status(400).json({ error: 'Mã thân xe (body_id) là bắt buộc.' });
-    }
-    try {
-        await simulationService.addVehicle(body_id);
-        res.status(201).json({ message: `Đã thêm xe ${body_id} thành công.` });
-    } catch (error) {
-        res.status(500).json({ error: `Không thể thêm xe. ${error.message}` });
-    }
-});
+// 2. Khởi tạo Socket Handler
+// Chúng ta truyền `io`, `simulationService` và một hàm để lấy dbStatus
+initializeSocket(io, simulationService, () => dbStatus);
 
-app.get('/api/logs', async (req, res) => {
-    try {
-        const query = 'SELECT * FROM logs ORDER BY timestamp DESC LIMIT 50'; // Sắp xếp mới nhất lên đầu
-        const [rows] = await pool.query(query);
-        res.json(rows);
-    } catch (error) {
-        console.error('❌ Lỗi khi lấy logs:', error);
-        res.status(500).json({ error: 'Không thể lấy dữ liệu logs.' });
-    }
-});
-
-io.on('connection', (socket) => {
-    console.log(`🔌 Một người dùng đã kết nối: ${socket.id}`);
-
-    socket.emit('initial-state', simulationService.getState());
-    socket.emit('db-status-update', dbStatus);
-
-    socket.on('add-vehicle', async (bodyId) => {
-        if (!bodyId) return;
-        try {
-            await simulationService.addVehicle(bodyId);
-        } catch (error) {
-            socket.emit('add-vehicle-error', { message: `Không thể thêm xe ${bodyId}. ${error.message}` });
-        }
-    });
-
-    socket.on('report-operational-error', (stationId) => {
-        simulationService.reportOperationalError(stationId);
-    });
-
-    socket.on('emergency-stop', async () => {
-        if (simulationService.emergencyStopAndClear) {
-            await simulationService.emergencyStopAndClear();
-            
-            // Khởi động lại mô phỏng ngay sau khi dừng (Sửa lỗi kẹt buffer)
-            simulationService.start(); 
-            
-            io.emit('action-confirmed', {
-                message: 'Dây chuyền đã dừng và tất cả xe đã được xóa.',
-                type: 'error'
-            });
-        }
-    });
-
-    socket.on('pause-line', async () => {
-        if (simulationService.pauseLine) {
-            await simulationService.pauseLine();
-        }
-    });
-
-    socket.on('play-line', async () => {
-        if (simulationService.playLine) {
-            await simulationService.playLine();
-        }
-    });
-
-    socket.on('remove-vehicle', async (bodyId) => {
-        console.log(`[Socket] Nhận yêu cầu xóa xe: ${bodyId}`);
-        if (!bodyId) {
-            socket.emit('action-error', { message: 'Mã xe không hợp lệ.' });
-            return;
-        }
-        try {
-            await simulationService.removeVehicle(bodyId);
-        } catch (error) {
-            console.error(`[Socket] Lỗi khi xóa xe ${bodyId}:`, error);
-            socket.emit('action-error', { message: `Không thể xóa xe ${bodyId}. ${error.message}` });
-        }
-    });
-
-    socket.on('confirm-vehicle-error', async (payload) => {
-        if (!payload || !payload.bodyId) {
-            console.error('[Socket] Nhận yêu cầu xác nhận lỗi xe không hợp lệ:', payload);
-            socket.emit('action-error', { message: 'Dữ liệu yêu cầu không hợp lệ.' });
-            return;
-        }
-        console.log(`[Socket] Nhận yêu cầu xác nhận lỗi xe: ${payload.bodyId} với lỗi "${payload.errorDescription}"`);
-        if (simulationService.confirmVehicleError) {
-            await simulationService.confirmVehicleError(payload.bodyId, payload.errorDescription, socket);
-        }
-    });
-
-    socket.on('send-to-recoat', async (payload) => {
-        if (!payload || !payload.bodyId) {
-            console.error('[Socket] Nhận yêu cầu gửi xe đi WR không hợp lệ:', payload);
-            socket.emit('action-error', { message: 'Dữ liệu yêu cầu không hợp lệ.' });
-            return;
-        }
-        console.log(`[socket] Nhận yêu cầu gửi xe đi WR: ${payload.bodyId} với lỗi "${payload.errorDescription}"`);
-        if (simulationService.sendVehicleToRecoat) {
-            await simulationService.sendVehicleToRecoat(payload.bodyId, payload.errorDescription, socket);
-        }
-    });
-
-    socket.on('disconnect', () => {
-        console.log(`🔌 Người dùng đã ngắt kết nối: ${socket.id}`);
-    });
-
-}); 
-
-const PORT = process.env.PORT || 3001;
+// === Khởi chạy Server ===
 server.listen(PORT, async () => {
     console.log(`🚀 Server đang chạy trên cổng ${PORT}`);
+    
+    // Khởi tạo simulation service (truyền io và pool vào)
     await simulationService.initialize(io, pool);
     simulationService.start();
 
+    // Chạy các tác vụ lặp lại
     setInterval(() => {
         const currentTime = new Date().toLocaleTimeString('vi-VN', { hour12: false });
         io.emit('time-update', currentTime);

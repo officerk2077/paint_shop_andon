@@ -1,3 +1,6 @@
+// File: App.jsx
+// NỘI DUNG CẬP NHẬT HOÀN CHỈNH
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import io from 'socket.io-client';
 import StationBox from './components/StationBox';
@@ -5,6 +8,9 @@ import StationModal from './components/StationModal';
 import AddVehicleModal from './components/AddVehicleModal';
 import ToastNotification from './components/ToastNotification';
 import LogPanel from './components/LogPanel';
+// === THÊM MỚI IMPORT ===
+import ErrorLogPanel from './components/ErrorLogPanel'; 
+// === KẾT THÚC THÊM MỚI ===
 import { FaBell, FaPause, FaPlay, FaCog, FaPlus, FaCheck, FaSync, FaExclamationTriangle } from 'react-icons/fa';
 import './assets/DashboardLayout.css';
 import './assets/ToastNotification.css';
@@ -25,8 +31,15 @@ function App() {
 
     const [showActionMenu, setShowActionMenu] = useState(false);
     const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
+    
     const logDropdownRef = useRef(null);
     const actionMenuRef = useRef(null);
+
+    // === THÊM MỚI: State và Ref cho Error Log Panel ===
+    const [hasUnreadErrorLogs, setHasUnreadErrorLogs] = useState(false);
+    const [showErrorLogPanel, setShowErrorLogPanel] = useState(false);
+    const errorLogDropdownRef = useRef(null); 
+    // === KẾT THÚC THÊM MỚI ===
 
     const [keepModalOpen, setKeepModalOpen] = useState(false);
 
@@ -44,16 +57,14 @@ function App() {
         setNotifications(prev => prev.filter(n => n.id !== id));
     }, []);
 
-    const handleConfirmError = useCallback((bodyIdToConfirm, errorDescription) => { // Chấp nhận errorDescription
-    console.log(`[App] Gửi yêu cầu xác nhận lỗi xe: ${bodyIdToConfirm} với lỗi "${errorDescription}"`);
-    // Gửi đi payload object
-    socket.emit('confirm-vehicle-error', { bodyId: bodyIdToConfirm, errorDescription: errorDescription });
+    const handleConfirmError = useCallback((bodyIdToConfirm, errorDescription) => { 
+        console.log(`[App] Gửi yêu cầu xác nhận lỗi xe: ${bodyIdToConfirm} với lỗi "${errorDescription}"`);
+        socket.emit('confirm-vehicle-error', { bodyId: bodyIdToConfirm, errorDescription: errorDescription });
     }, []);
 
-    const handleSendToRecoat = useCallback((bodyIdToSend, errorDescription) => { // Chấp nhận errorDescription
-    console.log(`[App] Gửi yêu cầu gửi xe đi WR: ${bodyIdToSend} với lỗi "${errorDescription}"`);
-    // Gửi đi payload object
-    socket.emit('send-to-recoat', { bodyId: bodyIdToSend, errorDescription: errorDescription });
+    const handleSendToRecoat = useCallback((bodyIdToSend, errorDescription) => { 
+        console.log(`[App] Gửi yêu cầu gửi xe đi WR: ${bodyIdToSend} với lỗi "${errorDescription}"`);
+        socket.emit('send-to-recoat', { bodyId: bodyIdToSend, errorDescription: errorDescription });
     }, []);
     
     // Effect chính lắng nghe socket events
@@ -68,23 +79,17 @@ function App() {
         });
         socket.on('time-update', setCurrentTime);
         socket.on('db-status-update', setDbStatus);
-        socket.on('operational-error', (data) => addNotification(data.message, 'error'));
+        
+        // === GỠ BỎ: socket.on('operational-error', ...) ===
+        // socket.on('operational-error', (data) => addNotification(data.message, 'error')); 
+        
         socket.on('action-confirmed', (data) => addNotification(data.message, data.type));
         socket.on('add-vehicle-error', (data) => addNotification(data.message, 'error'));
-
-        // Lắng nghe cảnh báo rework từ server
-        socket.on('vehicle-rework-alert', (data) => {
-            addNotification(data.message, data.type);
-        });
-
-        socket.on('vehicle-completed', (data) => {
-            addNotification(data.message, data.type);
-        });
-
-        socket.on('vehicle-checkpoint', (data) => {
-            addNotification(data.message, data.type);
-        });
-
+        socket.on('vehicle-rework-alert', (data) => addNotification(data.message, data.type));
+        socket.on('vehicle-completed', (data) => addNotification(data.message, data.type));
+        socket.on('vehicle-checkpoint', (data) => addNotification(data.message, data.type));
+        
+        // Lắng nghe log hệ thống (cho chấm đỏ của FaBell)
         const handleNewLogForDot = () => {
             setShowLogPanel(currentShowState => {
                 if (!currentShowState) {
@@ -94,10 +99,23 @@ function App() {
             });
         };
         socket.on('new-log', handleNewLogForDot);
+
+        // Lắng nghe log lỗi (cho chấm đỏ của FaExclamationTriangle)
+        const handleNewErrorLogForDot = () => {
+            setShowErrorLogPanel(currentShowState => {
+                if (!currentShowState) {
+                    setHasUnreadErrorLogs(true); 
+                }
+                return currentShowState;
+            });
+        };
+        socket.on('new-error-log', handleNewErrorLogForDot);
+
         socket.on('line-status-update', (status) => {
             setIsLinePaused(status === 'paused');
         });
 
+        // Xử lý click outside cho LogPanel
         const handleClickOutside = (event) => {
             const bellButton = document.querySelector('.log-toggle-btn');
             if (logDropdownRef.current && !logDropdownRef.current.contains(event.target) &&
@@ -113,13 +131,32 @@ function App() {
             document.removeEventListener('mousedown', handleClickOutside);
         }
 
+        // Xử lý click outside cho ErrorLogPanel
+         const handleClickOutsideError = (event) => {
+            const errorButton = document.querySelector('.error-log-toggle-btn');
+            if (errorLogDropdownRef.current && !errorLogDropdownRef.current.contains(event.target) &&
+                errorButton && !errorButton.contains(event.target))
+            {
+                setShowErrorLogPanel(false); 
+            }
+        };
+
+        if (showErrorLogPanel) {
+            document.addEventListener('mousedown', handleClickOutsideError);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutsideError);
+        }
+
         // Cleanup function
         return () => {
             socket.off('initial-state');
             socket.off('state-update');
             socket.off('time-update');
             socket.off('db-status-update');
-            socket.off('operational-error');
+            
+            // === GỠ BỎ: socket.off('operational-error') ===
+            // socket.off('operational-error'); 
+            
             socket.off('action-confirmed');
             socket.off('add-vehicle-error');
             socket.off('vehicle-rework-alert');
@@ -127,9 +164,12 @@ function App() {
             socket.off('vehicle-checkpoint');
             socket.off('line-status-update');
             socket.off('new-log', handleNewLogForDot);
+            
+            socket.off('new-error-log', handleNewErrorLogForDot); 
             document.removeEventListener('mousedown', handleClickOutside); 
+            document.removeEventListener('mousedown', handleClickOutsideError);
         };
-    }, [showLogPanel, addNotification])
+    }, [showLogPanel, showErrorLogPanel, addNotification])
 
     useEffect(() => {
         const handleClickOutsideAction = (event) => {
@@ -178,10 +218,7 @@ function App() {
         }
     };
 
-    const handleReportError = (stationId) => {
-        socket.emit('report-operational-error', stationId);
-        handleCloseModal();
-    };
+    // === GỠ BỎ: const handleReportError = ... ===
 
     const handleRemoveVehicle = useCallback((bodyIdToRemove) => {
         console.log(`[App] Gửi yêu cầu xóa xe: ${bodyIdToRemove}`);
@@ -203,11 +240,22 @@ function App() {
             setHasUnreadLogs(false); 
         }
         setShowActionMenu(false);
+        setShowErrorLogPanel(false); 
         setShowLogPanel(prevShow => !prevShow);
+    };
+
+    const toggleErrorLogPanel = () => {
+        if (!showErrorLogPanel) {
+            setHasUnreadErrorLogs(false); 
+        }
+        setShowActionMenu(false);
+        setShowLogPanel(false); 
+        setShowErrorLogPanel(prevShow => !prevShow);
     };
 
     const toggleActionMenu = () => {
         setShowLogPanel(false);
+        setShowErrorLogPanel(false); 
         setShowActionMenu(prevShow => !prevShow);
     };
 
@@ -221,7 +269,7 @@ function App() {
                         <span className='buffer-count'>{bufferVehicleCount}</span>
                     </div>
                     <a>|</a>
-                    {/* new */}
+                    {/* Action menu (FaCog) */}
                     <div className='action-menu-wrapper'>
                         <button onClick={toggleActionMenu} className='action-menu-btn' title='Hành động'>
                             <FaCog/>
@@ -231,20 +279,17 @@ function App() {
                                 <ul>
                                     <li onClick={() => { setShowAddVehicleModal(true);
                                     setShowActionMenu(false); }}>
-                                        {/* Sửa lỗi: Bọc nội dung trong thẻ span */}
                                         <span>
                                             <FaPlus/> Thêm xe...
                                         </span>
                                     </li>
                                     <li onClick={() => { handleTogglePausePlay();
                                     setShowActionMenu(false); }}>
-                                        {/* Sửa lỗi: Bọc nội dung trong thẻ span */}
                                         <span>
                                             {isLinePaused ? <><FaPlay/> Tiếp tục chuyền</> : <><FaPause/> Tạm dừng chuyền</>}
                                         </span>
                                     </li>
                                     <li onClick={() => { handleEmergencyStop(); setShowActionMenu(false); }} className='action-menu-item-danger'>
-                                        {/* Sửa lỗi: Bọc nội dung trong thẻ span */}
                                         <span>
                                             <FaExclamationTriangle /> Dừng khẩn cấp...
                                         </span>
@@ -253,8 +298,27 @@ function App() {
                             </div>
                         )}
                     </div>
+                    
+                    {/* Nút Error Log (FaExclamationTriangle) */}
                     <div className="notification-bell-wrapper">
-                        <button onClick={toggleLogPanel} className="log-toggle-btn" title="Xem thông báo">
+                        <button 
+                            onClick={toggleErrorLogPanel} 
+                            className="log-toggle-btn error-log-toggle-btn"
+                            title="Xem lịch sử lỗi (OK/NG)"
+                        >
+                            <FaExclamationTriangle />
+                            {hasUnreadErrorLogs && <span className="log-badge-dot"></span>}
+                        </button>
+                        {showErrorLogPanel && (
+                            <div className="log-panel-dropdown" ref={errorLogDropdownRef}> 
+                                <ErrorLogPanel socket={socket} />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Nút Log (FaBell) */}
+                    <div className="notification-bell-wrapper">
+                        <button onClick={toggleLogPanel} className="log-toggle-btn" title="Xem thông báo hệ thống">
                             <FaBell />
                             {hasUnreadLogs && <span className="log-badge-dot"></span>}
                         </button>
@@ -293,7 +357,7 @@ function App() {
                     station={selectedStation}
                     vehicles={getVehiclesAtStation(selectedStation.id)}
                     onClose={handleCloseModal}
-                    onReportError={handleReportError}
+                    // === GỠ BỎ: onReportError={handleReportError} ===
                     onRemoveVehicle={handleRemoveVehicle}
                     onConfirmError={handleConfirmError}
                     onSendToRecoat={handleSendToRecoat}

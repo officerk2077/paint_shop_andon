@@ -1,129 +1,116 @@
+// File: StationModal.jsx
+// NỘI DUNG CẬP NHẬT HOÀN CHỈNH (Đã gộp nút)
+
 import React from 'react';
-// Bỏ import useState và useEffect vì không dùng state nội bộ nữa
-// import { useEffect, useState } from 'react';
-import { FaCheck, FaSync, FaTimes, FaTrashAlt } from 'react-icons/fa';
+// (Đã xóa 'FaTimes' khỏi import)
+import { FaCheck, FaSync, FaTrashAlt } from 'react-icons/fa';
 import '../assets/StationModal.css';
 
 const OFFLINE_REPAIR_STATION_ID = 25; // ID trạm Offline Repair
 
 const StationModal = ({ station, vehicles, onClose, onRemoveVehicle, onConfirmError, onSendToRecoat }) => {
-    // Bỏ state errorDescriptions
-    // const [errorDescriptions, setErrorDescriptions] = useState({});
-    // useEffect(() => { setErrorDescriptions({}); }, [station, vehicles]);
 
     if (!station) return null;
 
     const handleContentClick = (e) => e.stopPropagation();
 
     const handleRemoveClick = (bodyId, modelName) => {
-        // ... (existing code) ...
         if (window.confirm(`Bạn có chắc chắn muốn xóa xe ${bodyId} (${modelName}) khỏi dây chuyền không?`)) {
             if (typeof onRemoveVehicle === 'function') {
                 onRemoveVehicle(bodyId);
-                onClose(); // Đóng modal sau khi xóa thành công
+                onClose(); 
             } else {
                 console.error("Lỗi: onRemoveVehicle không phải là một hàm!");
             }
         }
     };
 
-    // Hàm xử lý click nút Confirm Error (OK - Lỗi nhẹ)
     const handleConfirmErrorClick = (bodyId) => {
-        // ... (existing code) ...
-        // Hiện prompt yêu cầu nhập lỗi nhẹ
         const description = window.prompt(`Xác nhận sửa xong xe ${bodyId}. Nhập mô tả lỗi nhẹ (nếu có):`, "");
-
-        // Nếu người dùng không nhấn Cancel
         if (description !== null) {
-            if (typeof onConfirmError === 'function') {
-                // Gửi bodyId và mô tả lỗi lên App.jsx -> Backend
-                onConfirmError(bodyId, description.trim() || 'N/A'); // Gửi 'N/A' nếu không nhập gì
-            }
-            onClose(); // Đóng modal sau khi nhấn OK trên prompt
+            onConfirmError(bodyId, description);
+            onClose(); 
         }
-        // Nếu nhấn Cancel thì không làm gì cả
     };
 
-    // Hàm xử lý click nút Send To Recoat (NG - Sơn lại)
     const handleSendToRecoatClick = (bodyId) => {
-        // ... (existing code) ...
-         // Hiện prompt yêu cầu nhập lỗi nặng
-         const description = window.prompt(`Xác nhận gửi xe ${bodyId} đi sơn lại. Nhập mô tả lỗi nặng:`, "");
+        let description = "";
+        let valid = false;
 
-         // Chỉ thực hiện nếu người dùng nhập lỗi và không nhấn Cancel
-         if (description !== null && description.trim() !== "") {
-            if (window.confirm(`Bạn có chắc chắn muốn gửi xe ${bodyId} đi WR với lỗi "${description}" không?`)) { // Thêm xác nhận lần cuối
-                if (typeof onSendToRecoat === 'function') {
-                    // Gửi bodyId và mô tả lỗi lên App.jsx -> Backend
-                    onSendToRecoat(bodyId, description.trim());
-                }
-                 onClose(); // Đóng modal sau khi xác nhận lần cuối
+        while (!valid) {
+            description = window.prompt(`Xác nhận gửi xe ${bodyId} đi SƠN LẠI. Vui lòng nhập MÔ TẢ LỖI (Bắt buộc):`);
+            if (description === null) {
+                return; 
             }
-         } else if (description !== null && description.trim() === "") {
-             alert("Bạn phải nhập mô tả lỗi nặng trước khi gửi đi sơn lại.");
-             // Không đóng modal, cho người dùng nhập lại hoặc cancel prompt
-         }
-         // Nếu nhấn Cancel trên prompt đầu tiên thì không làm gì cả
+            if (description.trim() === "") {
+                window.alert("Mô tả lỗi không được để trống khi gửi đi sơn lại.");
+            } else {
+                valid = true;
+            }
+        }
+        onSendToRecoat(bodyId, description);
+        onClose(); 
     };
+
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            {/* Class "station-modal-content" có thể giữ hoặc bỏ tùy theo CSS */}
-            <div className="modal-content station-modal-content" onClick={handleContentClick}>
-                {/* === THAY ĐỔI: Cập nhật cấu trúc HTML của nút close === */}
-                <button className="close-button" onClick={onClose}>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
+        <div className='modal-overlay' onClick={onClose}>
+            <div className='modal-content' onClick={handleContentClick}>
+                
+                {/* Nút Close (X) giữ nguyên style animation */}
+                <button className='close-button' onClick={onClose} title="Đóng">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
-                {/* === KẾT THÚC THAY ĐỔI === */}
 
-                <h2>Thông tin trạm: {station.name}</h2>
-
-                <div className="modal-details">
-                    <p><strong>Trạng thái:</strong> {vehicles.length > 0 ? "Đang hoạt động" : "Trống"}</p>
-                    <p><strong>Sức chứa:</strong> {station.capacity}</p>
-                    <p><strong>Số xe hiện tại:</strong> {vehicles ? vehicles.length : 0}</p>
+                <h2>{station.name}</h2>
+                <div className='station-info'>
+                    <p>ID: {station.id}</p>
+                    <p>Sức chứa: {station.capacity}</p>
+                    <p>Thời gian (Takt): {station.takt_time / 1000}s</p>
                 </div>
-
-                <div className="vehicle-list">
-                    <h4>Danh sách xe tại trạm:</h4>
+                
+                <div className='vehicle-list-container'>
+                    <h3>Danh sách xe</h3>
                     {vehicles && vehicles.length > 0 ? (
-                        <ul>
-                            {vehicles.sort((a, b) => a.slot_position - b.slot_position).map(v => (
-                                <li key={v.body_id}>
-                                    {/* Phần hiển thị thông tin xe */}
-                                    <span className="vehicle-details">
-                                        <span className="slot-indicator">[Slot {v.slot_position}]</span>
-                                        <span className="color-swatch" style={{ backgroundColor: v.color_hex }}></span>
-                                        {v.body_id} - {v.model_name} ({v.target_color})
-                                        - <span className={`status-text-${v.status}`}>{v.status}</span>
-                                        {/* Không hiển thị current_error_name vì lỗi sẽ được nhập tay */}
-                                    </span>
+                        <ul className='vehicle-list'>
+                            {vehicles.map(v => (
+                                <li key={v.body_id} className={`vehicle-list-item status-${v.status}`}>
+                                    <div className='vehicle-info'>
+                                        <span className='vehicle-id'>{v.body_id} (Slot {v.slot_position})</span>
+                                        <span className='vehicle-model'>Model: {v.model_name || 'N/A'}</span>
+                                        <span className='vehicle-color'>Màu: {v.target_color || 'N/A'}</span>
+                                        {v.current_error_name && (
+                                            <span className='vehicle-error'>Lỗi: {v.current_error_name}</span>
+                                        )}
+                                    </div>
 
-                                    {/* Hiển thị nút OK/NG nếu đúng trạm và trạng thái */}
-                                    {station.id === OFFLINE_REPAIR_STATION_ID && v.status === 'rework_pending' && (
-                                        <div className='rework-pending-actions'> {/* Giữ class này để style nút */}
-                                            <button
-                                                className='action-button confirm-error-btn'
-                                                onClick={() => handleConfirmErrorClick(v.body_id)}
-                                                title={`Xác nhận sửa xong (lỗi nhẹ)`}
-                                            >
-                                                <FaCheck /> OK (Lỗi nhẹ)
-                                            </button>
-                                            <button
-                                                className='action-button send-recoat-btn'
-                                                onClick={() => handleSendToRecoatClick(v.body_id)}
-                                                title={`Gửi đi sơn lại (lỗi nặng)`}
-                                            >
-                                                <FaSync /> NG (Sơn lại)
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    {/* Nút xóa xe */}
+                                    {/* === BẮT ĐẦU SỬA: Gộp tất cả nút vào một div === */}
                                     <div className='vehicle-actions'>
+                                        
+                                        {/* Nút xử lý lỗi (chỉ hiện khi cần) */}
+                                        {station.id === OFFLINE_REPAIR_STATION_ID && v.status === 'rework_pending' && (
+                                            <div className='rework-actions'> {/* Div này để giữ 2 nút OK/NG với nhau */}
+                                                <button
+                                                    className='action-button confirm-error-btn'
+                                                    onClick={() => handleConfirmErrorClick(v.body_id)}
+                                                    title={`Xác nhận sửa xong (lỗi nhẹ)`}
+                                                >
+                                                    <FaCheck /> OK (Sửa xong)
+                                                </button>
+                                                <button
+                                                    className='action-button send-recoat-btn'
+                                                    onClick={() => handleSendToRecoatClick(v.body_id)}
+                                                    title={`Gửi đi sơn lại (lỗi nặng)`}
+                                                >
+                                                    <FaSync /> NG (Sơn lại)
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Nút xóa xe (luôn hiện, nằm chung hàng) */}
                                         <button
                                             className="action-button remove-vehicle-btn"
                                             onClick={() => handleRemoveClick(v.body_id, v.model_name)}
@@ -132,6 +119,7 @@ const StationModal = ({ station, vehicles, onClose, onRemoveVehicle, onConfirmEr
                                             <FaTrashAlt />
                                         </button>
                                     </div>
+                                    {/* === KẾT THÚC SỬA === */}
                                 </li>
                             ))}
                         </ul>

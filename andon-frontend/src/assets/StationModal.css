@@ -1,299 +1,257 @@
+/* File: StationModal.css */
+/* NỘI DUNG CẬP NHẬT HOÀN CHỈNH (Sửa lỗi căn chỉnh nút) */
+
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); 
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    animation: fadeIn 0.3s ease-out;
 }
 
 .modal-content {
-    background: #2c3e50;
-    color: #ecf0f1;
-    padding: 25px 30px;
+    background: #2c2c2c; 
+    color: #e0e0e0; 
+    padding: 20px 25px;
     border-radius: 8px;
-    border: 1px solid #4a6fa5;
-    width: 600px;
-    min-height: 400px;
-    /* min-width: 500px; */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    animation: zoomIn 0.3s ease-out forwards;
-}
-
-.close-button {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    box-sizing: border-box;
-    font-size: 1.5rem;
-    color: #bdc3c7;
-    cursor: pointer;
-    line-height: 0;
-    transition: all 0.2s ease-in-out;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;  
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid #444; 
 }
 
 .modal-content h2 {
     margin-top: 0;
-    padding-right: 40px;
-    border-bottom: 1px solid #34495e;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    color: #ffffff;
-    text-transform: uppercase;
+    margin-bottom: 15px;
+    color: #ffffff; 
+    border-bottom: 1px solid #444; 
+    padding-bottom: 10px;
 }
 
-.modal-details {
-    margin-bottom: 20px;
+/* Nút Close (X) (Giữ nguyên style animation) */
+.close-button {
+ width: 40px; 
+ height: 40px; 
+ position: absolute;
+ top: 15px; 
+ right: 20px; 
+ background: #455A64; 
+ border-radius: 50%;
+ box-shadow: 0 0 15px -3px rgba(255, 255, 255, .5); 
+ transition: .25s ease-in-out;
+ cursor: pointer;
+ animation: fade-in .5s ease-out .25s both;
+ border: none;
+ z-index: 1001;
+ font-size: 0; 
+ color: transparent;
 }
-.modal-details p {
-    margin: 10px 0;
-    font-size: 1rem;
+.close-button span {
+ display: block;
+ width: 8px; 
+ height: 2px;
+ background: white; 
+ box-shadow: 0 0 10px -3px rgba(255, 255, 255, .5); 
+ border-radius: 20px;
+ position: absolute;
+ transition: .25s ease-in-out;
+ animation: slide-in .5s ease-in-out .25s both;
+}
+.close-button span:nth-child(1) {
+ top: 12px; 
+ left: 13px; 
+ transform: rotate(45deg);
+ transform-origin: top left;
+}
+.close-button span:nth-child(2) {
+ top: 12px;
+ right: 13px;
+ transform: rotate(-45deg);
+ transform-origin: top right;
+}
+.close-button span:nth-child(3) {
+ bottom: 12px;
+ left: 13px;
+ transform: rotate(-45deg);
+ transform-origin: bottom left;
+}
+.close-button span:nth-child(4) {
+ bottom: 12px;
+ right: 13px;
+ transform: rotate(45deg);
+ transform-origin: bottom right;
+}
+.close-button:hover {
+ background: #37474F; 
+}
+.close-button:hover span {
+ width: 10px; 
+}
+@keyframes fade-in {
+ from { opacity: 0; transform: scale(1.1) }
+ to { opacity: 1; transform: scale(1) }
+}
+@keyframes slide-in {
+ from { width: 0; }
+ to { width: 8px; }
+}
+/* === KẾT THÚC NÚT CLOSE === */
+
+
+.station-info {
     display: flex;
+    gap: 20px;
+    background: #333; 
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #ccc; 
 }
-.modal-details p strong {
-    color: #95a5a6;
-    min-width: 150px;
-    display: inline-block;
+
+.vehicle-list-container {
+    margin-top: 20px;
+}
+
+.vehicle-list-container h3 {
+    margin-bottom: 10px;
+    color: #f0f0f0;
 }
 
 .vehicle-list {
-    flex-grow: 1;
-    margin-top: 15px;
-    border-top: 1px solid #34495e;
-    padding-top: 20px;
-}
-.vehicle-list h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-    color: #3498db;
-}
-.vehicle-list ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
-    max-height: 312px;
-    overflow-y: auto;
-}
-.vehicle-list li {
-    background-color: #34495e;
-    color: #ecf0f1;
-    padding: 8px 12px;
-    border-radius: 5px;
-    margin-bottom: 6px;
-    border-left: 4px solid #3498db;
-    font-weight: 500;
-}
-.vehicle-list p {
-    color: #95a5a6;
-    font-style: italic;
+    margin: 0;
 }
 
-.modal-actions {
-    margin-top: 25px;
-    text-align: right;
-}
-
-.vehicle-list ul li {
+.vehicle-list-item {
     display: flex;
     align-items: center;
-    padding: 6px 0;
-    border-bottom: 1px solid #eee;
-    flex-wrap: wrap;
-    position: relative;
+    justify-content: space-between;
+    padding: 12px 15px;
+    border-radius: 6px;
+    background: #3a3a3a; 
+    border: 1px solid #555; 
+    margin-bottom: 10px;
+    transition: background-color 0.2s ease;
 }
 
-.vehicle-details {
-    flex-grow: 1;
+.vehicle-list-item:hover {
+    background-color: #444; 
 }
 
+.vehicle-list-item.status-rework,
+.vehicle-list-item.status-rework_pending,
+.vehicle-list-item.status-rework_offline {
+    background-color: #5a502a; 
+    border-color: #b8a254;
+}
+
+.vehicle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* THÊM: Đảm bảo phần thông tin co giãn */
+    flex-grow: 1; 
+}
+
+.vehicle-id {
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 1.05rem;
+}
+
+.vehicle-model,
+.vehicle-color {
+    font-size: 0.85rem;
+    color: #bbb;
+}
+
+.vehicle-error {
+    font-size: 0.85rem;
+    color: #ff8a8a; 
+    font-weight: bold;
+}
+
+/* === SỬA LỖI CĂN CHỈNH NÚT (GỌN LẠI) === */
 .vehicle-actions {
     display: flex;
-    gap: 8px;
-    margin-left: auto;
-    align-items: center;
+    flex-direction: row;  /* SỬA: Đổi 'column' thành 'row' (Xếp hàng ngang) */
+    align-items: center; /* SỬA: Căn giữa theo chiều dọc */
+    justify-content: flex-end; /* Đẩy về cuối hàng */
+    gap: 10px;             /* Khoảng cách giữa (OK/NG) và (Xóa) */
+    flex-shrink: 0; 
 }
 
-.vehicle-actions .remove-vehicle-btn {
-    color: #dc3545;
-    margin-right: 5px;
-}
-.vehicle-actions .remove-vehicle-btn:hover {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-.vehicle-actions .confirm-error-btn {
-    color: #28a745;
-}
-.vehicle-actions .confirm-error-btn:hover {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.vehicle-actions .send-recoat-btn {
-    color: #fd7e14;
-}
-.vehicle-actions .send-recoat-btn:hover {
-    background-color: #ffe5d0;
-    color: #c25a00;
-}
-
-.rework-pending-actions {
+.rework-actions {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    flex-wrap: wrap;
-    width: 100%;
-    padding-left: 10px; 
-    box-sizing: border-box;
+    flex-direction: row; 
+    gap: 5px;
+    /* XÓA: margin-bottom: 5px; (Không cần nữa) */
 }
-
-.error-description-input {
-    flex-grow: 1;
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
+/* === KẾT THÚC SỬA LỖI CĂN CHỈNH === */
 
 
-.rework-pending-actions .action-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.vehicle-actions {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-}
-
-li .vehicle-details {
-    margin-bottom: 2px; 
-     flex-basis: 100%;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     flex-wrap: wrap; 
-     gap: 5px;
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes zoomIn {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-/* === BẮT ĐẦU KIỂU NÚT RỰC RỠ MỚI === */
-/* Áp dụng kiểu button-85 cho class .action-button */
+/* --- CSS Nút chung (Phiên bản Dark Mode) --- */
 .action-button {
-  padding: 0.6em 2em;
-  border: none;
-  outline: none;
-  color: rgb(255, 255, 255);
-  background: #111;
-  cursor: pointer;
-  position: relative;
-  z-index: 0;
-  border-radius: 10px;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  font-weight: bold; /* Giữ lại từ kiểu .action-button cũ */
-  margin-left: 10px; /* Thêm khoảng cách giữa các nút */
-}
-
-.action-button:before {
-  content: "";
-  background: linear-gradient(
-    45deg,
-    #ff0000,
-    #ff7300,
-    #fffb00,
-    #48ff00,
-    #00ffd5,
-    #002bff,
-    #7a00ff,
-    #ff00c8,
-    #ff0000
-  );
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  background-size: 400%;
-  z-index: -1;
-  filter: blur(5px);
-  -webkit-filter: blur(5px);
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
-  animation: glowing-button-85 20s linear infinite;
-  transition: opacity 0.3s ease-in-out;
-  border-radius: 10px;
-}
-
-@keyframes glowing-button-85 {
-  0% {
-    background-position: 0 0;
-  }
-  50% {
-    background-position: 400% 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
-}
-
-.action-button:after {
-  z-index: -1;
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: #222;
-  left: 0;
-  top: 0;
-  border-radius: 10px;
-}
-/* === KẾT THÚC KIỂU NÚT RỰC RỠ MỚI === */
-
-/* Ghi đè kiểu cho các nút action nhỏ bên trong danh sách xe */
-.vehicle-list .action-button {
-    padding: 0.4em 0.8em; /* THAY ĐỔI: Thu nhỏ padding hơn */
-    margin-left: 0; /* Bỏ margin-left, để container (gap) xử lý */
-    display: inline-flex; /* Cho phép icon và text căn chỉnh */
+    display: inline-flex;
     align-items: center;
-    gap: 4px; /* THAY ĐỔI: Giảm gap */
-    font-size: 0.85rem; /* THAY ĐỔI: Giảm cỡ chữ hơn */
-    font-weight: normal; /* Giảm độ đậm của chữ */
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 6px;
+    border: 1px solid #666; 
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #555; 
+    color: #e0e0e0; 
 }
 
-/* Ghi đè riêng cho nút xóa nếu nó cũng dùng action-button */
-.vehicle-actions .action-button {
-    padding: 0.4em; /* THAY ĐỔI: Thu nhỏ padding */
-    font-size: 1rem; /* THAY ĐỔI: Giảm kích thước icon */
+.action-button svg {
+    font-size: 0.8rem;
 }
 
+/* Nút xóa (Đỏ) */
+.remove-vehicle-btn {
+    background-color: #5a2a2a; 
+    color: #ffbaba; 
+    border-color: #a04f4f; 
+}
+.remove-vehicle-btn:hover {
+    background-color: #d9534f;
+    color: #fff;
+    border-color: #d9534f;
+}
+
+/* Nút OK (Xanh lá) */
+.confirm-error-btn {
+    background-color: #2a5a2a; 
+    color: #baffba; 
+    border-color: #4fa04f; 
+}
+.confirm-error-btn:hover {
+    background-color: #5cb85c;
+    color: #fff;
+    border-color: #5cb85c;
+}
+
+/* Nút NG (Cam) */
+.send-recoat-btn {
+    background-color: #5a4b2a; 
+    color: #ffebb0; 
+    border-color: #a0844f; 
+}
+.send-recoat-btn:hover {
+    background-color: #f0ad4e;
+    color: #fff;
+    border-color: #f0ad4e;
+}

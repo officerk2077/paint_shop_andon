@@ -1,6 +1,8 @@
+// File: AddVehicleModal.jsx
+// NỘI DUNG CẬP NHẬT HOÀN CHỈNH
+
 import React from 'react';
-// THAY ĐỔI: Đã cập nhật đường dẫn import CSS.
-import '../assets/AddVehicleModal.css';
+import '../assets/AddVehicleModal.css'; // Sẽ trỏ đến file CSS mới bên dưới
 
 
 export default function AddVehicleModal({ 
@@ -16,7 +18,9 @@ export default function AddVehicleModal({
 
     return (
         <div className='modal-overlay' onClick={onClose}>
-            <div className='modal-content' onClick={handleContentClick}> 
+            {/* THAY ĐỔI: Dùng class .modal-content-dark */}
+            <div className='modal-content modal-content-dark' onClick={handleContentClick}> 
+                
                 {/* === THAY ĐỔI: Cập nhật cấu trúc HTML của nút close === */}
                 <button className='close-button' onClick={onClose}>
                   <span></span>
@@ -25,6 +29,7 @@ export default function AddVehicleModal({
                   <span></span>
                 </button>
                 {/* === KẾT THÚC THAY ĐỔI === */}
+                
                 <h2>Thêm xe mới vào dây chuyền</h2>
 
                 <form onSubmit={onAddVehicle} className='add-vehicle-modal-form'>
@@ -44,7 +49,7 @@ export default function AddVehicleModal({
                             checked={keepOpen}
                             onChange={(e) => setKeepOpen(e.target.checked)}
                         />
-                        <label htmlFor="keepOpenCheckbox">
+                        <label htmlFor="keepOpenCheckBox">
                             Thêm nhiều xe
                         </label>
                     </div>
@@ -54,4 +59,3 @@ export default function AddVehicleModal({
         </div>
     );
 };
-

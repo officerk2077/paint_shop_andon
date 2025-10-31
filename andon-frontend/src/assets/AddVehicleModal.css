@@ -1,230 +1,252 @@
-/* === (ĐÃ CẬP NHẬT) CSS CHO MODAL THÊM XE === */
+/* File: AddVehicleModal.css */
+/* NỘI DUNG CẬP NHẬT HOÀN CHỈNH (Đã đồng bộ Dark Mode) */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Style Modal chung (Dark Mode) */
+.modal-content-dark {
+    background: #2c2c2c; 
+    color: #e0e0e0; 
+    padding: 20px 25px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px; /* Kích thước cho modal thêm xe */
+    position: relative;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid #444; 
+}
+
+.modal-content-dark h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #ffffff; 
+    border-bottom: 1px solid #444; 
+    padding-bottom: 10px;
+}
+
+/* === CSS CHO MODAL THÊM XE (Từ file bạn cung cấp) === */
 .add-vehicle-modal-form {
-  display: flex;
-  flex-direction: column; 
-  gap: 18px; /* Tăng khoảng cách giữa các mục (từ 15px) */
-  margin-top: 20px; 
+ display: flex;
+ flex-direction: column; 
+ gap: 18px; 
+ margin-top: 20px; 
 }
 
 .add-vehicle-modal-form label {
-  font-weight: 700;
-  font-size: 15px;
-  color: #ffffff;
-  margin-bottom: -10px;
-  text-transform: uppercase;
+ font-weight: 700;
+ font-size: 15px;
+ color: #ffffff; /* Chữ trắng (khớp dark mode) */
+ margin-bottom: -10px;
+ text-transform: uppercase;
 }
 
 /* Style cho input */
 .add-vehicle-modal-form input[type="text"] {
-  background-color: #ffffff; 
-  color: #212529;
-  border: 1px solid #ced4da; 
-  border-radius: 5px;
-  padding: 12px;
-  font-size: 16px; 
-  transition: border-color 0.2s, box-shadow 0.2s;
+ background-color: #ffffff; 
+ color: #212529;
+ border: 1px solid #ced4da; 
+ border-radius: 5px;
+ padding: 12px;
+ font-size: 16px; 
+ transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .add-vehicle-modal-form input[type="text"]:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2); 
+ outline: none;
+ border-color: #007bff;
+ box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2); 
 }
 
-/* --- (CẬP NHẬT) CSS CHO CHECKBOX --- */
+/* --- CSS CHO CHECKBOX --- */
 .add-vehicle-modal-toggle {
-  display: flex;
-  flex-direction: row; 
-  align-items: center;
-  gap: 8px; /* Giảm gap (từ 10px) để gần chữ hơn */
-  margin-top: 0; /* Bỏ margin-top (từ 5px) */
-  
-  /* Bỏ nền xám và viền để gọn gàng hơn */
-  background-color: transparent; 
-  border: none;
-  padding: 0; /* Bỏ padding */
+ display: flex;
+ flex-direction: row; 
+ align-items: center;
+ gap: 8px; 
+ margin-top: 0; 
+ background-color: transparent; 
+ border: none;
+ padding: 0; 
 }
 
 .add-vehicle-modal-toggle label {
-  font-weight: 400; /* Font thường (từ 500) */
-  font-size: 15px; /* Lớn hơn (từ 14px) */
-  color: #ffffff; /* Đậm hơn (từ #555) */
-  margin-bottom: 0; 
-  cursor: pointer;
-  text-transform: uppercase;
+ font-weight: 400; 
+ font-size: 15px; 
+ color: #ffffff; /* Chữ trắng (khớp dark mode) */
+ margin-bottom: 0; 
+ cursor: pointer;
+ text-transform: uppercase;
 }
 
-/* === BẮT ĐẦU STYLE CHECKBOX MỚI === */
-/* Style được áp dụng cho input[type="checkbox"] bên trong .add-vehicle-modal-toggle */
+/* === STYLE CHECKBOX MỚI === */
 .add-vehicle-modal-toggle input[type="checkbox"] {
-  appearance: none;
-  background-color: #dfe1e4;
-  border-radius: 72px;
-  border-style: none;
-  flex-shrink: 0;
-  height: 20px;
-  margin: 0;
-  position: relative;
-  width: 30px;
-  cursor: pointer; /* Đảm bảo con trỏ là dạng trỏ */
+ appearance: none;
+ background-color: #dfe1e4;
+ border-radius: 72px;
+ border-style: none;
+ flex-shrink: 0;
+ height: 20px;
+ margin: 0;
+ position: relative;
+ width: 30px;
+ cursor: pointer; 
 }
 
 .add-vehicle-modal-toggle input[type="checkbox"]::before {
-  bottom: -6px;
-  content: "";
-  left: -6px;
-  position: absolute;
-  right: -6px;
-  top: -6px;
+ bottom: -6px;
+ content: "";
+ left: -6px;
+ position: absolute;
+ right: -6px;
+ top: -6px;
 }
 
 .add-vehicle-modal-toggle input[type="checkbox"],
 .add-vehicle-modal-toggle input[type="checkbox"]::after {
-  transition: all 100ms ease-out;
+ transition: all 100ms ease-out;
 }
 
 .add-vehicle-modal-toggle input[type="checkbox"]::after {
-  background-color: #fff;
-  border-radius: 50%;
-  content: "";
-  height: 14px;
-  left: 3px;
-  position: absolute;
-  top: 3px;
-  width: 14px;
+ background-color: #fff;
+ border-radius: 50%;
+ content: "";
+ height: 14px;
+ left: 3px;
+ position: absolute;
+ top: 3px;
+ width: 14px;
 }
 
 .add-vehicle-modal-toggle input[type="checkbox"]:hover {
-  background-color: #c9cbcd;
-  transition-duration: 0s;
+ background-color: #c9cbcd;
+ transition-duration: 0s;
 }
 
 .add-vehicle-modal-toggle input[type="checkbox"]:checked {
-  background-color: #6e79d6;
+ background-color: #6e79d6;
 }
 
 .add-vehicle-modal-toggle input[type="checkbox"]:checked::after {
-  background-color: #fff;
-  left: 13px;
+ background-color: #fff;
+ left: 13px;
 }
 
 .add-vehicle-modal-toggle :focus:not(.focus-visible) {
-  outline: 0;
+ outline: 0;
 }
 
 .add-vehicle-modal-toggle input[type="checkbox"]:checked:hover {
-  background-color: #535db3;
+ background-color: #535db3;
 }
 /* === KẾT THÚC STYLE CHECKBOX MỚI === */
 
 
 /* Style cho button */
 .add-vehicle-modal-form button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 12px 15px; 
-  font-size: 16px; 
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); 
-  text-transform: uppercase;
+ background-color: #007bff;
+ color: white;
+ border: none;
+ border-radius: 5px;
+ padding: 12px 15px; 
+ font-size: 16px; 
+ font-weight: bold;
+ cursor: pointer;
+ transition: background-color 0.2s, transform 0.1s;
+ text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); 
+ text-transform: uppercase;
 }
 
 .add-vehicle-modal-form button:hover {
-  background-color: #0056b3; 
+ background-color: #0056b3; 
 }
 .add-vehicle-modal-form button:active {
-  transform: scale(0.98); 
+ transform: scale(0.98); 
 }
 
-/* === BẮT ĐẦU STYLE NÚT CLOSE MỚI === */
-/* Lưu ý: Style này được áp dụng cho class .close-button. 
-  HTML cho nút này cần 4 span bên trong:
-  <button class="close-button">
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-*/
+/* === STYLE NÚT CLOSE MỚI (Từ file bạn cung cấp) === */
 .close-button {
-  width: 40px; /* THAY ĐỔI: Giảm kích thước */
-  height: 40px; /* THAY ĐỔI: Giảm kích thước */
-  position: absolute;
-  top: 15px; 
-  right: 20px; 
-  background: #455A64;
-  border-radius: 50%;
-  box-shadow: 0 0 15px -3px rgba(255, 255, 255, .5); /* THAY ĐỔI: Giảm box-shadow */
-  transition: .25s ease-in-out;
-  cursor: pointer;
-  animation: fade-in .5s ease-out .25s both;
-  border: none;
-  z-index: 1001;
-  font-size: 0; 
-  color: transparent;
+ width: 40px; 
+ height: 40px; 
+ position: absolute;
+ top: 15px; 
+ right: 20px; 
+ background: #455A64;
+ border-radius: 50%;
+ box-shadow: 0 0 15px -3px rgba(255, 255, 255, .5); 
+ transition: .25s ease-in-out;
+ cursor: pointer;
+ animation: fade-in .5s ease-out .25s both;
+ border: none;
+ z-index: 1001;
+ font-size: 0; 
+ color: transparent;
 }
 
 .close-button span {
-  display: block;
-  width: 8px; /* THAY ĐỔI: Giảm kích thước span (40/4) - 2px */
-  height: 2px;
-  background: white;
-  box-shadow: 0 0 10px -3px rgba(255, 255, 255, .5); /* THAY ĐỔI: Giảm box-shadow */
-  border-radius: 20px;
-  position: absolute;
-  transition: .25s ease-in-out;
-  animation: slide-in .5s ease-in-out .25s both;
+ display: block;
+ width: 8px; 
+ height: 2px;
+ background: white;
+ box-shadow: 0 0 10px -3px rgba(255, 255, 255, .5); 
+ border-radius: 20px;
+ position: absolute;
+ transition: .25s ease-in-out;
+ animation: slide-in .5s ease-in-out .25s both;
 }
 
 .close-button span:nth-child(1) {
-  top: 12px; /* THAY ĐỔI: (40/3) - (2/2) */
-  left: 13px; /* THAY ĐỔI: 40/3 */
-  transform: rotate(45deg);
-  transform-origin: top left;
+ top: 12px; 
+ left: 13px; 
+ transform: rotate(45deg);
+ transform-origin: top left;
 }
 
 .close-button span:nth-child(2) {
-  top: 12px;
-  right: 13px;
-  transform: rotate(-45deg);
-  transform-origin: top right;
+ top: 12px;
+ right: 13px;
+ transform: rotate(-45deg);
+ transform-origin: top right;
 }
 
 .close-button span:nth-child(3) {
-  bottom: 12px;
-  left: 13px;
-  transform: rotate(-45deg);
-  transform-origin: bottom left;
+ bottom: 12px;
+ left: 13px;
+ transform: rotate(-45deg);
+ transform-origin: bottom left;
 }
 
 .close-button span:nth-child(4) {
-  bottom: 12px;
-  right: 13px;
-  transform: rotate(45deg);
-  transform-origin: bottom right;
+ bottom: 12px;
+ right: 13px;
+ transform: rotate(45deg);
+ transform-origin: bottom right;
 }
 
 .close-button:hover {
-  background: #37474F;
+ background: #37474F;
 }
 
 .close-button:hover span {
-  width: 10px; /* THAY ĐỔI: (40/4) */
+ width: 10px; 
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: scale(1.1) }
-  to { opacity: 1; transform: scale(1) }
+ from { opacity: 0; transform: scale(1.1) }
+ to { opacity: 1; transform: scale(1) }
 }
 
 @keyframes slide-in {
-  from { width: 0; }
-  to { width: 8px; }
+ from { width: 0; }
+ to { width: 8px; }
 }
-
-/* === KẾT THÚC STYLE NÚT CLOSE MỚI === */
-
